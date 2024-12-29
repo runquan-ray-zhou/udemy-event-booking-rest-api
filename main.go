@@ -4,10 +4,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/runquan-ray-zhou/udemy-event-booking-rest-api/db"
 	"github.com/runquan-ray-zhou/udemy-event-booking-rest-api/models"
 )
 
 func main() {
+	db.InitDB()
 	server := gin.Default() // configures http server that comes with middleware, a server pointer
 
 	server.GET("/events", getEvents)    // register a handler for incoming get request
