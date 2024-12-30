@@ -21,7 +21,11 @@ func main() {
 
 // send back a response
 func getEvents(context *gin.Context) { // gin will pass a context parament to the function, if you set this handler as this endpoint.
-	events := models.GetAllEvents()
+	events, err := models.GetAllEvents()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch events.  Try again later."})
+		return
+	}
 	context.JSON(http.StatusOK, events) // send back a response in JSON format, pass back a http status code and data
 }
 
@@ -42,6 +46,10 @@ func createEvent(context *gin.Context) { // extract of data from request
 	event.ID = 1
 	event.UserID = 1
 
-	event.Save()                                                                         //
+	err = event.Save()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create events.  Try again later."})
+		return
+	} //
 	context.JSON(http.StatusCreated, gin.H{"message": "Event created:", "event": event}) // response message when event is created successful
 }

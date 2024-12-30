@@ -29,7 +29,7 @@ func (e Event) Save() error { // save method to save event to database
 	query := `
 	INSERT INTO events(name, description, location, dateTime, user_id) 
 	VALUES (?, ?, ?, ?, ?)`
-	stmt, err := db.DB.Prepare(query)
+	stmt, err := db.DB.Prepare(query) // stored in memory, easily reuse it, reusable
 
 	if err != nil {
 		return err
@@ -48,6 +48,26 @@ func (e Event) Save() error { // save method to save event to database
 }
 
 // normal function
-func GetAllEvents() []Event { // call it to get available event
-	return events // return events slice
+func GetAllEvents() ([]Event, error) { // call it to get available event
+	query := "SELECT * FROM events"
+	rows, err := db.DB.Query(query) // no need to prepare, use Query() to get back a bunch of rows., use Exec() to change things in table
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var events []Event
+
+	for rows.Next() {
+		var event Event
+		err := rows.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserID) // reads content of the row it is processing
+
+		if err != nil {
+			return nil, err
+		}
+
+		events = append(events, event)
+	}
+
+	return events, nil // return events slice
 }
