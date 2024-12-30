@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"github.com/runquan-ray-zhou/udemy-event-booking-rest-api/db"
 	"github.com/runquan-ray-zhou/udemy-event-booking-rest-api/utils"
 )
@@ -48,7 +50,14 @@ func (u User) ValidateCredentials() error {
 	err := row.Scan(&retrievedPassword)
 
 	if err != nil {
-		return err
+		return errors.New("credentials invalid")
 	}
 
+	passwordIsValid := utils.CheckPasswordHash(u.Password, retrievedPassword)
+
+	if !passwordIsValid {
+		return errors.New("credentials invalid")
+	}
+
+	return nil
 }
