@@ -15,5 +15,5 @@ func GenerateToken(email string, userId int64) (string, error) {
 		"exp":    time.Now().Add(time.Hour * 2).Unix(), // token will be valid for 2 hours
 	})
 
-	return token.SignedString(secretKey)
+	return token.SignedString([]byte(secretKey))
 }
