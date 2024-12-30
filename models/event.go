@@ -28,7 +28,7 @@ var events = []Event{} // slice of events
 func (e Event) Save() error { // save method to save event to database
 	query := `
 	INSERT INTO events(name, description, location, dateTime, user_id) 
-	VALUES (?, ?, ?, ?, ?)`
+	VALUES (?, ?, ?, ?, ?)` // ? are place holder
 	stmt, err := db.DB.Prepare(query) // stored in memory, easily reuse it, reusable
 
 	if err != nil {
@@ -70,4 +70,18 @@ func GetAllEvents() ([]Event, error) { // call it to get available event
 	}
 
 	return events, nil // return events slice
+}
+
+func GetEventByID(id int64) (*Event, error) { // query to fetch database for id // null value for a pointer is nil
+	query := "SELECT * FROM events WHERE id = ?"
+	row := db.DB.QueryRow(query, id) // use to get back one row
+
+	var event Event
+	err := row.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &event, nil
 }

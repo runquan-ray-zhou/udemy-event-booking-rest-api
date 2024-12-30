@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/runquan-ray-zhou/udemy-event-booking-rest-api/db"
@@ -12,7 +13,9 @@ func main() {
 	db.InitDB()
 	server := gin.Default() // configures http server that comes with middleware, a server pointer
 
+	// routes
 	server.GET("/events", getEvents)    // register a handler for incoming get request
+	server.GET("/events/:id", getEvent) // get events by id
 	server.POST("/events", createEvent) // post request
 
 	server.Run("127.0.0.1:8080") // start listening to incoming request when main func is executed, currently on local host 8080
@@ -27,6 +30,23 @@ func getEvents(context *gin.Context) { // gin will pass a context parament to th
 		return
 	}
 	context.JSON(http.StatusOK, events) // send back a response in JSON format, pass back a http status code and data
+}
+
+func getEvent(context *gin.Context) { // request event by id handler
+	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64) // get path parameter value
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse event id."})
+		return
+	}
+
+	event, err := models.GetEventByID(eventId)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch event."})
+		return
+	}
+
+	context.JSON(http.StatusOK, event)
 }
 
 func createEvent(context *gin.Context) { // extract of data from request
