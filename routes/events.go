@@ -36,6 +36,15 @@ func getEvent(context *gin.Context) { // request event by id handler
 }
 
 func createEvent(context *gin.Context) { // extract of data from request
+	token := context.Request.Header.Get("Authorization") // grab the token from the header of request, Get() always returns a string
+
+	if token == "" {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
+		return
+	}
+
+	//check for invalid token
+
 	var event models.Event
 	err := context.ShouldBindJSON(&event) // similar to Scan() function, store that request data into event, must follow structure of Event
 
@@ -43,11 +52,6 @@ func createEvent(context *gin.Context) { // extract of data from request
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data."}) // response message if there is error
 		return
 	}
-
-	// if err != nil {
-	// 	context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data.", "error": err.Error()})
-	// 	return
-	// }
 
 	event.ID = 1
 	event.UserID = 1
