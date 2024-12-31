@@ -119,7 +119,7 @@ func (event Event) Delete() error {
 }
 
 func (e Event) Register(userId int64) error {
-	query := "INSERT INTO registration(event_id, user_id) VALUES (?, ?)"
+	query := "INSERT INTO registrations(event_id, user_id) VALUES (?, ?)"
 	stmt, err := db.DB.Prepare(query)
 
 	if err != nil {
