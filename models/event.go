@@ -19,13 +19,13 @@ type Event struct {
 	Description string    `binding: "required"`
 	Location    string    `binding: "required"`
 	DateTime    time.Time `binding: "required"`
-	UserID      int       // links the even to the user who created it
+	UserID      int64     // links the even to the user who created it
 }
 
 var events = []Event{} // slice of events
 
 // methods to interact with the events
-func (e Event) Save() error { // save method to save event to database
+func (e *Event) Save() error { // save method to save event to database
 	query := `
 	INSERT INTO events(name, description, location, dateTime, user_id) 
 	VALUES (?, ?, ?, ?, ?)` // ? are place holder

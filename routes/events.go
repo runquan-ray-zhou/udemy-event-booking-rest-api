@@ -45,7 +45,7 @@ func createEvent(context *gin.Context) { // extract of data from request
 	}
 
 	//check for invalid token
-	err := utils.VerifyToken(token)
+	userId, err := utils.VerifyToken(token)
 
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
@@ -60,9 +60,10 @@ func createEvent(context *gin.Context) { // extract of data from request
 		return
 	}
 
-	event.UserID = 1
+	event.UserID = userId
 
 	err = event.Save()
+
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create events.  Try again later."})
 		return
