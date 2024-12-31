@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/runquan-ray-zhou/udemy-event-booking-rest-api/models"
-	"github.com/runquan-ray-zhou/udemy-event-booking-rest-api/utils"
 )
 
 // send back a response
@@ -37,29 +36,15 @@ func getEvent(context *gin.Context) { // request event by id handler
 }
 
 func createEvent(context *gin.Context) { // extract of data from request
-	token := context.Request.Header.Get("Authorization") // extract the token from the header of request, Get() always returns a string
-
-	if token == "" {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
-		return
-	}
-
-	//check for invalid token
-	userId, err := utils.VerifyToken(token)
-
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
-		return
-	}
-
 	var event models.Event
-	err = context.ShouldBindJSON(&event) // similar to Scan() function, store that request data into event, must follow structure of Event
+	err := context.ShouldBindJSON(&event) // similar to Scan() function, store that request data into event, must follow structure of Event
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data."}) // response message if there is error
 		return
 	}
 
+	userId := context.GetInt64("userId")
 	event.UserID = userId
 
 	err = event.Save()
