@@ -15,6 +15,8 @@ func RegisterRoutes(server *gin.Engine) {
 	authenticated.POST("/events", createEvent)       // post request, should be protected
 	authenticated.PUT("/events/:id", updateEvent)    // update request, should be protected
 	authenticated.DELETE("/events/:id", deleteEvent) // delete request, should be protected
+	authenticated.POST("/events/:id/register")       // register event by authorized user route
+	authenticated.DELETE("/events/:id/register")     // delete event by authorized user route
 
 	server.POST("/signup", signup) // create new user route
 	server.POST("/login", login)   // handle user login
